@@ -3,8 +3,9 @@ import "@nomicfoundation/hardhat-toolbox";
 import 'hardhat-deploy';
 import '@nomiclabs/hardhat-ethers';
 
-const accounts = [process.env.OWNER_KEY ?? 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'];
+const accounts = [process.env.OWNER_KEY ?? ''];
 const rpcUrl = (chain: string) => `https://rpc.ankr.com/${chain}/${process.env.ANKR_KEY}`;
+const defaultDeployer = process.env.DEPLOYER ?? '';
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
@@ -42,8 +43,8 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 0,
-      sepolia: '0x92A2E7BA8446400C7407275e8Dc1FDAcED30E2Cf',
-      mumbai: '0x92A2E7BA8446400C7407275e8Dc1FDAcED30E2Cf',
+      sepolia: defaultDeployer,
+      mumbai: defaultDeployer,
     },
   },
 };

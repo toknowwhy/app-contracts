@@ -8,26 +8,20 @@ const networkDeploymentPaths = [sepoliaDeployments, mumbaiDeployments];
 
 const CURRENT_VERSION = {
   major: 1,
-  minor: 1,
+  minor: 0,
   patch: 0,
 };
 
 const contractList = {
   name: "Testnet Vault",
   version: CURRENT_VERSION,
-  tags: {},
-  contracts: [],
+  contracts: {},
 };
 
-const formatContract = (chainId, contractName, deploymentBlob) => {
+const formatContract = (deploymentBlob) => {
   return {
-    chainId,
     address: deploymentBlob.address,
-    version: CURRENT_VERSION,
-    type: contractName,
     abi: deploymentBlob.abi,
-    tags: [],
-    extensions: {},
   };
 };
 
@@ -40,6 +34,9 @@ networkDeploymentPaths.forEach((networkDeploymentPath) => {
   );
 
   contractDeploymentPaths.forEach((contractDeploymentFileName) => {
+    if (!contractList.contracts[chainId]) {
+      contractList.contracts[chainId] = {}
+    }
     const contractName = contractDeploymentFileName.split(".")[0];
     const contractDeployment = JSON.parse(
       fs.readFileSync(
@@ -47,9 +44,7 @@ networkDeploymentPaths.forEach((networkDeploymentPath) => {
         "utf8"
       )
     );
-    contractList.contracts.push(
-      formatContract(chainId, contractName, contractDeployment)
-    );
+    contractList.contracts[chainId][contractName] = formatContract(contractDeployment);
   });
 });
 

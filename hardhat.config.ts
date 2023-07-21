@@ -34,9 +34,8 @@ const config: HardhatUserConfig = {
       chainId: 137,
     },
     mumbai: {
-      url: rpcUrl('polygon_mumbai'),
+      url: 'https://rpc-mumbai.maticvigil.com',
       accounts,
-      gasPrice: 55000000000,
       chainId: 80001,
     },
   },

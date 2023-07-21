@@ -3,8 +3,8 @@
   "scripts": {
     "clean": "rm -rf cache/ artifacts/",
     "compile": "hardhat compile",
-    "deploy:sepolia": "DEPLOY=v1.0.0.sepolia hardhat deploy --network sepolia",
-    "deploy:mumbai": "DEPLOY=v1.0.0.mumbai hardhat deploy --network mumbai",
+    "deploy:sepolia": "DEPLOY=v1.0.0.sepolia hardhat --network sepolia deploy",
+    "deploy:mumbai": "DEPLOY=v1.0.0.mumbai hardhat --network mumbai deploy",
     "generate": "node ./scripts/generateContractList.js"
   },
   "devDependencies": {

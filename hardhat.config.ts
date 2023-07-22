@@ -9,6 +9,9 @@ const defaultDeployer = process.env.DEPLOYER ?? '';
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
   networks: {
     localhost: {
       chainId: 31337,
@@ -34,7 +37,7 @@ const config: HardhatUserConfig = {
       chainId: 137,
     },
     mumbai: {
-      url: 'https://rpc-mumbai.maticvigil.com',
+      url: rpcUrl('polygon_mumbai'),
       accounts,
       chainId: 80001,
     },

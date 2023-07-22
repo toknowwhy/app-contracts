@@ -15,17 +15,19 @@ contract Vault is IVault {
     using SafeMath for uint256;
 
     event IncreaseCollateral (
-        address indexed receiver,
+        address indexed owner,
+        uint256 indexed unitDebt,
         address collateralToken,
         uint256 amount,
-        uint256 liquidationPrice
+        uint256 indexed liquidationPrice
     );
 
     event DecreaseCollateral (
-        address indexed receiver,
+        address indexed owner,
+        uint256 indexed unitDebt,
         address collateralToken,
         uint256 collateralAmount,
-        uint256 liquidationPrice
+        uint256 indexed liquidationPrice
     );
 
     event CollateralOwnerTrasnfer (
@@ -38,16 +40,18 @@ contract Vault is IVault {
 
     event IncreaseDebt (
         address indexed owner,
+        uint256 indexed unitDebt,
         address collateralToken,
         uint256 amount,
-        uint256 liquidationPrice
+        uint256 indexed liquidationPrice
     );
 
     event DecreaseDebt (
         address indexed owner,
+        uint256 indexed unitDebt,
         address collateralToken,
         uint256 amount,
-        uint256 liquidationPrice
+        uint256 indexed liquidationPrice
     );
 
     event Approval(
@@ -143,7 +147,13 @@ contract Vault is IVault {
         require(_balanceDelta > 0, "Vault: 0");
         vaultOwnerAccount[_receiver][_collateralToken].tokenAssets =  vaultOwnerAccount[_receiver][_collateralToken].tokenAssets.add(_balanceDelta);
         vaultPoolAccount[_collateralToken].tokenAssets =  vaultPoolAccount[_collateralToken].tokenAssets.add(_balanceDelta);
-        emit IncreaseCollateral(_receiver, _collateralToken, _balanceDelta, _getLiquidationPrice(_receiver, _collateralToken));
+        emit IncreaseCollateral(
+            _receiver, 
+            vaultOwnerAccount[_receiver][_collateralToken].tinuDebt, 
+            _collateralToken, 
+            _balanceDelta, 
+            _getLiquidationPrice(_receiver, _collateralToken)
+        );
         return true;
     }
 
@@ -172,7 +182,12 @@ contract Vault is IVault {
         require(!yes, "Vault: collateral amount out of range");
 
         IERC20(_collateralToken).transfer(_receiver, _collateralAmount);
-        emit DecreaseCollateral(_from, _collateralToken, _collateralAmount, _getLiquidationPrice(_receiver, _collateralToken));
+        emit DecreaseCollateral(
+            _from, 
+            vaultOwnerAccount[_from][_collateralToken].tinuDebt, 
+            _collateralToken, 
+            _collateralAmount, 
+            _getLiquidationPrice(_from, _collateralToken));
         return true;
     }
     
@@ -193,7 +208,13 @@ contract Vault is IVault {
         require(!yes, "Vault: unit debt out of range");
 
         ITinuToken(tinu).mint(_receiver, _amount);
-        emit IncreaseDebt(_from, _collateralToken, _amount, _getLiquidationPrice(_receiver, _collateralToken));
+        emit IncreaseDebt(
+            _from, 
+            vaultOwnerAccount[_from][_collateralToken].tinuDebt,
+            _collateralToken, 
+            _amount, 
+            _getLiquidationPrice(_from, _collateralToken)
+        );
         return true;
     }
     
@@ -217,7 +238,13 @@ contract Vault is IVault {
         require(_balance > 0, "balance == 0");
         ITinuToken(tinu).burn(_balance);
         vaultOwnerAccount[_receiver][_collateralToken].tinuDebt = vaultOwnerAccount[_receiver][_collateralToken].tinuDebt.sub(_balance);
-        emit DecreaseDebt(_receiver, _collateralToken, _balance, _getLiquidationPrice(_receiver, _collateralToken));
+        emit DecreaseDebt(
+            _receiver, 
+            vaultOwnerAccount[_receiver][_collateralToken].tinuDebt,
+            _collateralToken, 
+            _balance, 
+            _getLiquidationPrice(_receiver, _collateralToken)
+        );
 
         return true;
     }

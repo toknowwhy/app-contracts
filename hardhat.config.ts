@@ -10,7 +10,10 @@ const defaultDeployer = process.env.DEPLOYER ?? '';
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY ?? '',
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY ?? '',
+    }
   },
   networks: {
     localhost: {

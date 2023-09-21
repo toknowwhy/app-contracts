@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.21;
 
 interface ITinuToken {
     function mint(address _to, uint256 value) external returns(bool);

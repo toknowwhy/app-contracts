@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -143,8 +143,6 @@ contract Farm is Ownable {
         UserLockInfo storage userLockInfo = userLock[msg.sender][_lockIndex];
         require(block.timestamp > userLockInfo.unLockTime, 'Farm: Not expired');
         require(userLockInfo.amount > 0, 'Farm: Not amount');
-       
-        updatePool(_pid, multipliers[_multiplierIndex]);
         
         transfer(msg.sender, _amount);
         userLockInfo.amount = userLockInfo.amount.sub(_amount);

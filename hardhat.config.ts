@@ -3,13 +3,15 @@ import "@nomicfoundation/hardhat-toolbox";
 import 'hardhat-deploy';
 import '@nomiclabs/hardhat-ethers';
 import "@nomicfoundation/hardhat-foundry";
+import * as tdly from "@tenderly/hardhat-tenderly";
 
 const accounts = [process.env.OWNER_KEY ?? ''];
 const rpcUrl = (chain: string) => `https://rpc.ankr.com/${chain}/${process.env.ANKR_KEY}`;
 const defaultDeployer = process.env.DEPLOYER ?? '';
+tdly.setup();
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.17",
+  solidity: "0.8.21",
   etherscan: {
     apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY ?? '',
@@ -68,6 +70,11 @@ const config: HardhatUserConfig = {
       mumbai: defaultDeployer,
     },
   },
+  tenderly: {
+    username: "ShuaJJ",
+    project: "UNIT",
+    privateVerification: false
+  }
 };
 
 export default config;

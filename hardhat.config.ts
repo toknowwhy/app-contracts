@@ -30,10 +30,25 @@ const config: HardhatUserConfig = {
       accounts,
       chainId: 1,
     },
+    optimism: {
+      url: rpcUrl('optimism'),
+      accounts,
+      chainId: 10,
+    },
     arbitrum: {
       url: rpcUrl('arbitrum'),
       accounts,
       chainId: 42161,
+    },
+    arbitrumGoerli: {
+      url: 'https://endpoints.omniatech.io/v1/arbitrum/goerli/public',
+      accounts,
+      chainId: 421613,
+    },
+    optimismGoerli: {
+      url: 'https://goerli.optimism.io',
+      accounts,
+      chainId: 420,
     },
     polygon: {
       url: rpcUrl('polygon'),

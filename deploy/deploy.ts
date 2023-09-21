@@ -18,6 +18,12 @@ const chainName = (chainId: number) => {
       return 'Sepolia';
     case 42161:
       return 'Arbitrum';
+    case 420:
+      return 'Optimism Goerli';
+    case 10:
+      return 'Optimism';
+    case 421613:
+      return 'Arbitrum Goerli';
     case 56:
       return 'Binance Smart Chain';
     case 97:

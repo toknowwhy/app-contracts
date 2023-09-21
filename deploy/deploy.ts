@@ -1,7 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { cyan, green, yellow, dim } from '../scripts/colors';
-import { setPriceFeed, setMinter, setTokenConfig } from '../scripts/action';
-import { Signer } from 'ethers';
+import { setPriceFeed, setMinter, setTokenConfig, setMultiplier } from '../scripts/action';
 
 function displayResult(name: string, result: any) {
   if (!result.newlyDeployed) {
@@ -47,7 +46,6 @@ module.exports = async (hardhat: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, getChainId, ethers } = hardhat;
   const { deploy } = deployments;
 
-  
   let { deployer } = await getNamedAccounts();
   const chainId = parseInt(await getChainId(), 10);
   // @ts-ignore
@@ -57,6 +55,8 @@ module.exports = async (hardhat: HardhatRuntimeEnvironment) => {
   console.log('Deployment nonce', deploymentSignerInitialNonce);
   // @ts-ignore
   const gasData = await ethers.provider.getFeeData();
+  // @ts-ignore
+  const latestBlock = await ethers.provider.getBlock("latest");
 
   // 31337 is unit testing, 1337 is for coverage
   const isTestEnvironment = chainId === 31337 || chainId === 1337;
@@ -126,6 +126,26 @@ module.exports = async (hardhat: HardhatRuntimeEnvironment) => {
 
   cyan('\nSet token config for price feed...');
   await setTokenConfig(wrapped(chainId), unitPriceResult.address, 18);
+
+  const un = '0x101627e8e52f627951BBdEC88418B131eE890cbE';
+
+  const farm = await deploy('Farm', {
+    from: deployer,
+    args: [
+      '172800',
+      '1000000000000000000000',
+      latestBlock.number,
+      un
+    ],
+  });
+
+  displayResult('Farm', farm)
+
+  yellow('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+
+  cyan('\nSet Multipliers for farm...');
+
+  await setMultiplier(1, 3, 6, 10)
 
   dim('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   green('Contract Deployments Complete!');

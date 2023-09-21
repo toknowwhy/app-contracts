@@ -22,6 +22,16 @@ export async function setMinter(vault: string, contract?: Contract) {
     green(`TINU Minter set!`)
 }
 
+export async function setMultiplier(apy1: number, apy2: number, apy3: number, apy4: number, contract?: Contract) {
+    if (!contract) {
+        contract = await (ethers as any).getContract('Farm')
+    }
+    cyan('\nSetting minter on TINU...')
+    const tx = await contract!.setMultiplier(apy1, apy2, apy3, apy4);
+    await tx.wait(1)
+    green(`Farm Multiplier set!`)
+}
+
 export async function setTokenConfig(wrapped: string, priceFeed: string, decimals: number, contract?: Contract) {
     if (!contract) {
         contract = await (ethers as any).getContract('VaultPriceFeed')

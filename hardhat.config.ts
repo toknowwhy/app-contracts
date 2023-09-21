@@ -2,6 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import 'hardhat-deploy';
 import '@nomiclabs/hardhat-ethers';
+import "@nomicfoundation/hardhat-foundry";
 
 const accounts = [process.env.OWNER_KEY ?? ''];
 const rpcUrl = (chain: string) => `https://rpc.ankr.com/${chain}/${process.env.ANKR_KEY}`;

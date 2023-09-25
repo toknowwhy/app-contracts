@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.21;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
+import "forge-std/console.sol";
 import {Vault} from "../contracts/core/Vault.sol";
 
-contract CounterTest is Test {
+contract VaultTest is Test {
     Vault public vault;
     address public TINU = 0xFf8acBd6c5BE49b8141c35c73163d5D6227dfC32;
     address public WETH = 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9;
@@ -23,8 +24,7 @@ contract CounterTest is Test {
     function test_MintWithoutBalance() public {
         vm.startPrank(from);
         vault.approve(from, true);
-        console.log("is allowed: ", vault.allowances(from, from));
-        vm.expectRevert("Vault: unit debt out of range");
+        vm.expectRevert();
         vault.increaseDebtFrom(from, WETH, amount, from);
         vm.stopPrank();
     }

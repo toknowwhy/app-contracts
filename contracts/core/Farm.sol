@@ -35,6 +35,13 @@ contract Farm is Ownable {
        address _to
     );
 
+    event TransferLockOwner(
+          address indexed from,
+          address indexed to,
+          uint256 index,
+          uint256 amount
+    );
+
     struct UserInfo {
         uint256 amount;
         uint256 rewardDebt;
@@ -132,7 +139,7 @@ contract Farm is Ownable {
     }
 
     // lock LP
-    function depositAndLock(uint256 _pid, uint256 _multiplierIndex, uint256 _amount) public { 
+    function depositAndLock(uint256 _pid, uint256 _multiplierIndex, uint256 _amount, address _to) public { 
         require(_amount > 0, 'Farm: amount cannot be 0');
         require( _multiplierIndex < 4, "Farm: _multiplierIndex < 4");
 
@@ -141,21 +148,22 @@ contract Farm is Ownable {
         PoolInfo memory pool = poolInfo[_pid];
         pool.lpToken.transferFrom(address(msg.sender), address(this), _amount);
 
-        userUnlockIndexs[msg.sender] =  userUnlockIndexs[msg.sender].add(1);
+        userUnlockIndexs[_to] =  userUnlockIndexs[_to].add(1);
         uint256 _unlockTime = lockTime[_multiplierIndex] + block.timestamp;
         uint256 _multiplier =  multipliers[_multiplierIndex];
         uint256 _rewardDebt =  _amount.mul(_multiplier).mul(pool.accCakePerShare).div(1e12);
 
-        userLock[msg.sender][userUnlockIndexs[msg.sender]] = UserLockInfo(
+        userLock[_to][userUnlockIndexs[_to]] = UserLockInfo(
             _amount,
             _unlockTime, 
            _multiplier,
            _rewardDebt,
             _pid
         );
+
         totalWeights = totalWeights.add(_amount.mul(_multiplier));
 
-        emit Deposit(msg.sender, _multiplier, userUnlockIndexs[msg.sender],  _amount);
+        emit Deposit(_to, _multiplier, userUnlockIndexs[_to],  _amount);
     }
 
     function withdraw( uint256 _lockIndex, uint256 _amount) public {
@@ -195,7 +203,7 @@ contract Farm is Ownable {
             );
         }
         userLockInfo.rewardDebt = userLockInfo.amount.mul(userLockInfo.multiplier).mul(_accCakePerShare).div(1e12);
-        
+
     }
 
     function claimAll(uint256[] memory _userUnlockIndexs, uint256 _period,  address _to) public {
@@ -302,5 +310,21 @@ contract Farm is Ownable {
 
     function getTime(uint256 _from, uint256 _to) public pure returns (uint256) {
         return _to.sub(_from);
+    }
+
+    function transferLockOwner(address _newOwner, uint256 _userUnlockIndex) public {
+        UserLockInfo storage userLockInfo = userLock[msg.sender][_userUnlockIndex];
+        require(userLockInfo.amount > 0, "Farm: amount 0");
+        UserLockInfo storage newUserLockInfo = userLock[_newOwner][_userUnlockIndex];
+        require(userLockInfo.amount == 0, "Farm: newOnwer amount not 0");
+
+        newUserLockInfo.amount = userLockInfo.amount;
+        newUserLockInfo.unLockTime = userLockInfo.unLockTime;
+        newUserLockInfo.multiplier = userLockInfo.multiplier;
+        newUserLockInfo.rewardDebt = userLockInfo.rewardDebt;
+        newUserLockInfo.pid = userLockInfo.pid;
+        userLockInfo.amount = 0;
+
+        emit TransferLockOwner(msg.sender, _newOwner, _userUnlockIndex, newUserLockInfo.amount);
     }
 }
